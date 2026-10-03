@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 
 import { FileSharingStack } from './file_sharing-stack';
 
@@ -43,8 +44,17 @@ export class PipelineStack extends cdk.Stack {
                 'npm test',
                 'npx cdk synth',
               ],
+
+              primaryOutputDirectory: 'cdk.out',
             }
           ),
+
+          synthCodeBuildDefaults: {
+            buildEnvironment: {
+              buildImage:
+                codebuild.LinuxBuildImage.STANDARD_7_0,
+            },
+          },
         }
       );
 
