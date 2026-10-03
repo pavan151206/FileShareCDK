@@ -5,7 +5,7 @@ import * as pipelines from 'aws-cdk-lib/pipelines';
 import * as codeconnections from
   'aws-cdk-lib/aws-codeconnections';
 
-import { FileSharingStack } from './file-sharing-stack';
+import { FileSharingStack } from './file_sharing-stack';
 
 export interface PipelineStackProps
   extends cdk.StackProps {
