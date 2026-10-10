@@ -22,5 +22,22 @@ export class WeblabStack extends cdk.Stack {
 
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
+
+const dummyTable = new dynamodb.Table(this, 'DummyV2', {
+      tableName: 'DummyV2',
+
+      partitionKey: {
+        name: 'experimentId',
+        type: dynamodb.AttributeType.STRING,
+      },
+
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+
+      encryption: dynamodb.TableEncryption.AWS_MANAGED,
+
+      pointInTimeRecovery: true,
+
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
   }
 }
