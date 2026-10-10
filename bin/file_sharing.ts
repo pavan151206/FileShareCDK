@@ -17,7 +17,7 @@ const connectionArn =
 
 if (!connectionArn) {
   throw new Error(
-    'connectionArn is required. Add it to cdk.json. hello'
+    'connectionArn is required. Add it to cdk.json. hello da '
   );
 }
 
