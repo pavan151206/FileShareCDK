@@ -10,7 +10,7 @@ const connectionArn =
 
 if (!connectionArn) {
   throw new Error(
-    'connectionArn is missing. Add it to cdk.json. this is testing this is the last This is pavan editing the file'
+    'connectionArn is missing. Add it to cdk.json.  This is pavan editing the file'
   );
 }
 
