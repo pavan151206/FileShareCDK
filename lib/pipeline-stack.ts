@@ -18,16 +18,19 @@ export class PipelineStack extends cdk.Stack {
     super(scope, id, props);
 
     /*
-     * GitHub source
+     * GitHub source through AWS CodeConnections.
      *
-     * triggerOnPush: true means:
-     * GitHub push -> CodeConnections -> CodePipeline
+     * The connection ARN must point to a GitHub
+     * connection that was authorized using the
+     * AWS Connector for GitHub App.
      */
     const source = pipelines.CodePipelineSource.connection(
       'pavan151206/FileShareCDK',
       'main',
       {
         connectionArn: props.connectionArn,
+
+        // Start pipeline when a commit is pushed to main.
         triggerOnPush: true,
       }
     );
@@ -67,7 +70,7 @@ export class PipelineStack extends cdk.Stack {
     );
 
     /*
-     * Application stage
+     * Deployment stage
      */
     pipeline.addStage(
       new FileSharingStage(
@@ -82,7 +85,7 @@ export class PipelineStack extends cdk.Stack {
 }
 
 /*
- * Development environment
+ * Application stage
  */
 class FileSharingStage extends cdk.Stage {
   constructor(
