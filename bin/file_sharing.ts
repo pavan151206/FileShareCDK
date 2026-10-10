@@ -1,23 +1,58 @@
 #!/usr/bin/env node
 
 import * as cdk from 'aws-cdk-lib';
+
 import { PipelineStack } from '../lib/pipeline-stack';
+import { DatabaseStack } from '../lib/database-stack';
 
 const app = new cdk.App();
 
+/*
+ * Get the already-authorized GitHub CodeConnections ARN.
+ *
+ * This connection should NOT be created by CDK.
+ */
 const connectionArn =
   app.node.tryGetContext('connectionArn');
 
 if (!connectionArn) {
   throw new Error(
-    'connectionArn is missing. Add it to cdk.json.  This is pavan editing the file'
+    'connectionArn is required. Add it to cdk.json. hello da this is from feature branch'
   );
 }
 
-new PipelineStack(app, 'FileSharingPipelineStack', {
-  connectionArn,
-  env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION,
-  },
-});
+/*
+ * Pipeline
+ */
+new PipelineStack(
+  app,
+  'FileSharingPipelineStack',
+  {
+    connectionArn,
+
+    env: {
+      account:
+        process.env.CDK_DEFAULT_ACCOUNT,
+
+      region:
+        process.env.CDK_DEFAULT_REGION,
+    },
+  }
+);
+
+/*
+ * Database infrastructure
+ */
+new DatabaseStack(
+  app,
+  'DatabaseStack',
+  {
+    env: {
+      account:
+        process.env.CDK_DEFAULT_ACCOUNT,
+
+      region:
+        process.env.CDK_DEFAULT_REGION,
+    },
+  }
+);

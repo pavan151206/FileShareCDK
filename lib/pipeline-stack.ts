@@ -20,14 +20,16 @@ export class PipelineStack extends cdk.Stack {
     /*
      * GitHub source
      *
-     * triggerOnPush: true means:
-     * GitHub push -> CodeConnections -> CodePipeline
+     * The CodeConnections connection is created and authorized
+     * outside CDK. CDK only references the existing ARN.
      */
     const source = pipelines.CodePipelineSource.connection(
       'pavan151206/FileShareCDK',
       'main',
       {
         connectionArn: props.connectionArn,
+
+        // Automatically start the pipeline when main changes.
         triggerOnPush: true,
       }
     );
@@ -82,7 +84,7 @@ export class PipelineStack extends cdk.Stack {
 }
 
 /*
- * Development environment
+ * Application infrastructure deployed by the pipeline.
  */
 class FileSharingStage extends cdk.Stage {
   constructor(
@@ -94,7 +96,10 @@ class FileSharingStage extends cdk.Stage {
 
     new FileSharingStack(
       this,
-      'FileSharing'
+      'FileSharing',
+      {
+        env: props?.env,
+      }
     );
   }
 }
