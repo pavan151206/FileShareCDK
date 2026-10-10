@@ -39,7 +39,7 @@ const dummyTable = new dynamodb.Table(this, 'DummyV2', {
 
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
-  }
+
 
 const dummyTableV2 = new dynamodb.Table(this, 'DummyV3', {
       tableName: 'DummyV3',
