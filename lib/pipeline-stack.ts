@@ -1,91 +1,111 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+import * as codeconnections from 'aws-cdk-lib/aws-codeconnections';
 
 import { FileSharingStack } from './file_sharing-stack';
-
-export interface PipelineStackProps extends cdk.StackProps {
-  connectionArn: string;
-}
 
 export class PipelineStack extends cdk.Stack {
   constructor(
     scope: Construct,
     id: string,
-    props: PipelineStackProps
+    props?: cdk.StackProps
   ) {
     super(scope, id, props);
 
     /*
-     * GitHub source through AWS CodeConnections.
+     * GitHub CodeConnections connection.
      *
-     * The connection ARN must point to a GitHub
-     * connection that was authorized using the
-     * AWS Connector for GitHub App.
+     * This is created by CloudFormation/CDK.
+     *
+     * IMPORTANT:
+     * The connection initially starts as PENDING.
+     * You must complete the GitHub authorization once.
      */
-    const source = pipelines.CodePipelineSource.connection(
-      'pavan151206/FileShareCDK',
-      'main',
-      {
-        connectionArn: props.connectionArn,
+    const githubConnection =
+      new codeconnections.CfnConnection(
+        this,
+        'GitHubConnection',
+        {
+          connectionName:
+            'FileSharingGitHubConnection',
 
-        // Start pipeline when a commit is pushed to main.
-        triggerOnPush: true,
-      }
-    );
+          providerType: 'GitHub',
+        }
+      );
 
     /*
-     * CDK Pipeline
+     * GitHub repository source.
      */
-    const pipeline = new pipelines.CodePipeline(
-      this,
-      'FileSharingPipeline',
-      {
-        pipelineName: 'FileSharingPipeline',
+    const source =
+      pipelines.CodePipelineSource.connection(
+        'pavan151206/FileShareCDK',
+        'main',
+        {
+          connectionArn:
+            githubConnection.attrConnectionArn,
 
-        synth: new pipelines.ShellStep(
-          'Synth',
-          {
-            input: source,
+          triggerOnPush: true,
+        }
+      );
 
-            commands: [
-              'npm ci',
-              'npm run build',
-              'npm test',
-              'npx cdk synth',
-            ],
+    /*
+     * CDK Pipeline.
+     */
+    const pipeline =
+      new pipelines.CodePipeline(
+        this,
+        'FileSharingPipeline',
+        {
+          pipelineName:
+            'FileSharingPipeline',
 
-            primaryOutputDirectory: 'cdk.out',
-          }
-        ),
+          synth:
+            new pipelines.ShellStep(
+              'Synth',
+              {
+                input: source,
 
-        synthCodeBuildDefaults: {
-          buildEnvironment: {
-            buildImage:
-              codebuild.LinuxBuildImage.STANDARD_7_0,
+                commands: [
+                  'npm ci',
+                  'npm run build',
+                  'npm test',
+                  'npx cdk synth',
+                ],
+
+                primaryOutputDirectory:
+                  'cdk.out',
+              }
+            ),
+
+          synthCodeBuildDefaults: {
+            buildEnvironment: {
+              buildImage:
+                codebuild.LinuxBuildImage.STANDARD_7_0,
+            },
           },
-        },
-      }
-    );
+        }
+      );
 
     /*
-     * Deployment stage
+     * Development deployment stage.
      */
     pipeline.addStage(
       new FileSharingStage(
         this,
         'Dev',
         {
-          env: props.env,
+          env: props?.env,
         }
       )
     );
   }
 }
 
-/*
- * Application stage
+/**
+ * Application stage.
  */
 class FileSharingStage extends cdk.Stage {
   constructor(

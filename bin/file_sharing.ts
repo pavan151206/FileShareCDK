@@ -5,19 +5,13 @@ import { PipelineStack } from '../lib/pipeline-stack';
 
 const app = new cdk.App();
 
-const connectionArn =
-  app.node.tryGetContext('connectionArn');
-
-if (!connectionArn) {
-  throw new Error(
-    'connectionArn is missing. Add it to cdk.json.  hello  one is testing this is the last This is pavan editing the file'
-  );
-}
-
-new PipelineStack(app, 'FileSharingPipelineStack', {
-  connectionArn,
-  env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION,
-  },
-});
+new PipelineStack(
+  app,
+  'FileSharingPipelineStack',
+  {
+    env: {
+      account: process.env.CDK_DEFAULT_ACCOUNT,
+      region: process.env.CDK_DEFAULT_REGION,
+    },
+  }
+);

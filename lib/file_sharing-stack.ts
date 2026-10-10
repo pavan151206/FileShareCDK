@@ -10,8 +10,13 @@ export class FileSharingStack extends cdk.Stack {
   ) {
     super(scope, id, props);
 
-    new sqs.Queue(this, 'FileSharingQueue', {
-      visibilityTimeout: cdk.Duration.seconds(300),
-    });
+    new sqs.Queue(
+      this,
+      'FileSharingQueue',
+      {
+        visibilityTimeout:
+          cdk.Duration.seconds(300),
+      }
+    );
   }
 }

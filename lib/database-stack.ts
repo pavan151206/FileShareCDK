@@ -39,23 +39,4 @@ const dummyTable = new dynamodb.Table(this, 'DummyV2', {
 
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
-
-
-const dummyTableV2 = new dynamodb.Table(this, 'DummyV3', {
-      tableName: 'DummyV3',
-
-      partitionKey: {
-        name: 'experimentId',
-        type: dynamodb.AttributeType.STRING,
-      },
-
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-
-      encryption: dynamodb.TableEncryption.AWS_MANAGED,
-
-      pointInTimeRecovery: true,
-
-      removalPolicy: cdk.RemovalPolicy.RETAIN,
-    });
-  }
 }
